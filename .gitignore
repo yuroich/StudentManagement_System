@@ -1,0 +1,12 @@
+# Error logs (can contain usernames and IP addresses)
+logs/*.log
+sms/logs/*.log
+
+# Profile photos uploaded while testing (keep the folder itself)
+sms/assets/uploads/*
+!sms/assets/uploads/.gitkeep
+
+# Editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
