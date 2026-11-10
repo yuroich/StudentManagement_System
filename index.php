@@ -80,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="auth-body">
+  <?php include __DIR__ . '/includes/auth_bg.php'; ?>
   <main class="auth-card">
     <h1>SIGN IN</h1>
     <?php if ($error): ?><p class="form-error" role="alert"><?= e($error) ?></p><?php endif; ?>

@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="auth-body">
+  <?php include __DIR__ . '/includes/auth_bg.php'; ?>
   <main class="auth-card">
     <h1>Sign Up</h1>
     <?php foreach ($errors as $err): ?><p class="form-error" role="alert"><?= e($err) ?></p><?php endforeach; ?>
