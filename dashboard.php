@@ -48,7 +48,7 @@ require __DIR__ . '/includes/header.php';
     </div>
     <button type="submit" class="btn btn-orange btn-sm">Search</button>
     <span class="spacer"></span>
-    <select name="course" onchange="this.form.submit()">
+    <select name="course" data-cs aria-label="Filter by course" onchange="this.form.submit()">
       <option value="">All Courses</option>
       <?php foreach (COURSES as $c): ?>
         <option value="<?= e($c) ?>" <?= $c === $course ? 'selected' : '' ?>><?= e($c) ?></option>
@@ -106,45 +106,58 @@ require __DIR__ . '/includes/header.php';
 
 <!-- ADD / UPDATE modal (one form, reused) -->
 <div class="modal" id="formModal" hidden>
-  <div class="modal-box">
+  <div class="modal-box modal-wide">
     <button type="button" class="modal-close" data-close aria-label="Close">&times;</button>
     <h2 id="formTitle">Add New Student</h2>
-    <form method="post" id="studentForm" action="actions/add_student.php">
+    <form method="post" id="studentForm" class="form-grid" action="actions/add_student.php">
       <?= csrf_field() ?>
       <input type="hidden" name="id" id="f_id">
 
-      <label for="f_name">Student Name:</label>
-      <input type="text" name="full_name" id="f_name" maxlength="120" required>
+      <div class="fld fld-8">
+        <label for="f_name">Student Name:</label>
+        <input type="text" name="full_name" id="f_name" maxlength="120" required>
+      </div>
+      <div class="fld fld-4">
+        <label for="f_gender">Gender:</label>
+        <select name="gender" id="f_gender" data-cs required>
+          <option>Male</option><option>Female</option>
+        </select>
+      </div>
 
-      <label for="f_contact">Contact Number:</label>
-      <input type="text" name="contact" id="f_contact" placeholder="Leave blank if none">
+      <div class="fld fld-6">
+        <label for="f_contact">Contact Number:</label>
+        <input type="text" name="contact" id="f_contact" placeholder="Leave blank if none">
+      </div>
+      <div class="fld fld-6">
+        <label for="f_birth">Birth Date:</label>
+        <input type="date" name="birth_date" id="f_birth" max="<?= date('Y-m-d') ?>" required>
+      </div>
 
-      <label for="f_gender">Gender:</label>
-      <select name="gender" id="f_gender" required>
-        <option>Male</option><option>Female</option>
-      </select>
+      <div class="fld fld-12">
+        <label for="f_address">Address:</label>
+        <input type="text" name="address" id="f_address" required>
+      </div>
 
-      <label for="f_address">Address:</label>
-      <input type="text" name="address" id="f_address" required>
-
-      <label for="f_birth">Birth Date:</label>
-      <input type="date" name="birth_date" id="f_birth" max="<?= date('Y-m-d') ?>" required>
-
-      <label for="f_course">Course:</label>
-      <select name="course" id="f_course">
-        <?php foreach (COURSES as $c): ?><option><?= e($c) ?></option><?php endforeach; ?>
-      </select>
-
-      <label for="f_year">Year:</label>
-      <select name="year_level" id="f_year"><option>1</option><option>2</option><option>3</option><option>4</option></select>
-
-      <label for="f_block">Block:</label>
-      <select name="block" id="f_block"><option>A</option><option>B</option><option>C</option><option>D</option></select>
-
-      <label for="f_status">Status:</label>
-      <select name="status" id="f_status">
-        <?php foreach (STATUSES as $st): ?><option><?= e($st) ?></option><?php endforeach; ?>
-      </select>
+      <div class="fld fld-3">
+        <label for="f_course">Course:</label>
+        <select name="course" id="f_course" data-cs>
+          <?php foreach (COURSES as $c): ?><option><?= e($c) ?></option><?php endforeach; ?>
+        </select>
+      </div>
+      <div class="fld fld-3">
+        <label for="f_year">Year:</label>
+        <select name="year_level" id="f_year" data-cs><option>1</option><option>2</option><option>3</option><option>4</option></select>
+      </div>
+      <div class="fld fld-3">
+        <label for="f_block">Block:</label>
+        <select name="block" id="f_block" data-cs><option>A</option><option>B</option><option>C</option><option>D</option></select>
+      </div>
+      <div class="fld fld-3">
+        <label for="f_status">Status:</label>
+        <select name="status" id="f_status" data-cs>
+          <?php foreach (STATUSES as $st): ?><option><?= e($st) ?></option><?php endforeach; ?>
+        </select>
+      </div>
 
       <button type="submit" class="btn btn-orange btn-block" id="formSubmit">ADD STUDENT</button>
     </form>
@@ -152,6 +165,6 @@ require __DIR__ . '/includes/header.php';
 </div>
 
 <script>window.IS_ADMIN = <?= $admin ? 'true' : 'false' ?>;</script>
-<script src="assets/js/app.js"></script>
+<script src="assets/js/app.js?v=<?= filemtime(__DIR__ . '/assets/js/app.js') ?>"></script>
 </body>
 </html>

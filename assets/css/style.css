@@ -395,3 +395,71 @@ form.inline { display: inline; }
   background-size: 200% 100%; -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent; animation: shine 4s linear infinite;
 }
+/* =====================================================================
+   DROPDOWN ANIMATION, WIDE ADD/UPDATE CARD, SEARCH LIST FIX
+   ===================================================================== */
+@keyframes itemIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* --- Search suggestions were hidden behind the table: lift the toolbar above it --- */
+.toolbar { position: relative; z-index: 25; }
+.data-table { position: relative; z-index: 1; }
+.suggestions { top: calc(100% + 6px); transform-origin: top; animation: dropIn .22s var(--ease); }
+.suggestions a, .suggestions .no-result { animation: itemIn .26s var(--ease) both; }
+.suggestions > :nth-child(2) { animation-delay: .03s; }
+.suggestions > :nth-child(3) { animation-delay: .06s; }
+.suggestions > :nth-child(4) { animation-delay: .09s; }
+.suggestions > :nth-child(n+5) { animation-delay: .12s; }
+
+/* --- Animated dropdown (built by app.js on top of <select data-cs>) --- */
+.cs { position: relative; width: 100%; }
+.cs-native { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; pointer-events: none; overflow: hidden; }
+.cs-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 11px 14px; border: 1.5px solid rgba(11,58,120,.35); border-radius: 10px;
+  background: #fff8ef; color: var(--ink); font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.cs-btn:hover { border-color: var(--orange); }
+.cs-btn:focus-visible, .cs.open .cs-btn { outline: none; border-color: var(--orange); box-shadow: 0 0 0 4px rgba(242,160,61,.25); }
+.cs-arrow {
+  flex: none; width: 7px; height: 7px; margin-top: -4px; border-right: 2px solid var(--navy); border-bottom: 2px solid var(--navy);
+  transform: rotate(45deg); transition: transform .3s var(--ease), margin .3s var(--ease);
+}
+.cs.open .cs-arrow { transform: rotate(-135deg); margin-top: 4px; }
+
+.cs-list {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 80; margin: 0; padding: 6px; list-style: none;
+  max-height: 220px; overflow-y: auto; background: #fff; border: 1.5px solid var(--navy); border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,.3); color: var(--navy-deep);
+  opacity: 0; visibility: hidden; transform: translateY(-8px) scale(.96); transform-origin: top;
+  transition: opacity .2s var(--ease), transform .25s var(--ease), visibility 0s .25s;
+}
+.cs.open .cs-list { opacity: 1; visibility: visible; transform: none; transition: opacity .2s var(--ease), transform .25s var(--ease), visibility 0s; }
+.cs.up .cs-list { top: auto; bottom: calc(100% + 6px); transform: translateY(8px) scale(.96); transform-origin: bottom; }
+.cs.up.open .cs-list { transform: none; }
+.cs-opt { padding: 9px 12px; border-radius: 8px; font-size: 13.5px; cursor: pointer; transition: background .15s, padding-left .15s; }
+.cs.open .cs-opt { animation: itemIn .28s var(--ease) both; animation-delay: calc(var(--i, 0) * 28ms); }
+.cs-opt:hover, .cs-opt.active { background: linear-gradient(90deg, #ffefd6, #ffffff); padding-left: 18px; }
+.cs-opt[aria-selected="true"] { color: var(--orange-dark); font-weight: 700; }
+.cs-opt[aria-selected="true"]::after { content: "\2713"; float: right; }
+.toolbar .cs { width: auto; min-width: 150px; }
+.toolbar .cs-btn { background: #fff; }
+
+/* --- Add / Update student: a wide, short card instead of one long column --- */
+.modal-box.modal-wide { width: min(720px, 100%); max-height: none; overflow: visible; padding: 24px 30px 26px; }
+.modal-box.modal-wide h2 { margin-bottom: 8px; }
+.form-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0 16px; }
+.form-grid .fld-3  { grid-column: span 3; }
+.form-grid .fld-4  { grid-column: span 4; }
+.form-grid .fld-6  { grid-column: span 6; }
+.form-grid .fld-8  { grid-column: span 8; }
+.form-grid .fld-12 { grid-column: 1 / -1; }
+.modal-box .form-grid label { margin: 10px 0 5px; }
+.modal-box .form-grid .btn-block { grid-column: 1 / -1; margin-top: 18px; }
+
+@media (max-width: 640px) {
+  .modal-box.modal-wide { overflow-y: auto; max-height: 92vh; padding: 22px 18px; }
+  .form-grid .fld-4, .form-grid .fld-6, .form-grid .fld-8 { grid-column: 1 / -1; }
+  .form-grid .fld-3 { grid-column: span 6; }
+  .toolbar .cs { flex: 1 1 140px; }
+}
