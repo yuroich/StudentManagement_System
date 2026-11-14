@@ -31,6 +31,9 @@ $students = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $totalUsers    = (int)$conn->query('SELECT COUNT(*) FROM users')->fetch_row()[0];
 $totalStudents = (int)$conn->query('SELECT COUNT(*) FROM students')->fetch_row()[0];
 
+// Users currently logged in (active in the last ONLINE_MINUTES minutes)
+$online = online_users();
+
 $admin = is_admin();
 $pageTitle = ($admin ? 'Admin' : 'User') . ' Dashboard | Student Management System';
 require __DIR__ . '/includes/header.php';
@@ -38,6 +41,7 @@ require __DIR__ . '/includes/header.php';
 <main class="container">
   <section class="stats">
     <div class="stat"><span>Total Users</span><strong><?= $totalUsers ?></strong></div>
+    <?php include __DIR__ . '/includes/online-card.php'; ?>
     <div class="stat"><span>Total Students</span><strong><?= $totalStudents ?></strong></div>
   </section>
 
@@ -163,6 +167,9 @@ require __DIR__ . '/includes/header.php';
     </form>
   </div>
 </div>
+
+<!-- ONLINE USERS popup (admin only) -->
+<?php include __DIR__ . '/includes/online-modal.php'; ?>
 
 <script>window.IS_ADMIN = <?= $admin ? 'true' : 'false' ?>;</script>
 <script src="assets/js/app.js?v=<?= filemtime(__DIR__ . '/assets/js/app.js') ?>"></script>

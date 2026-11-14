@@ -5,6 +5,7 @@ const STATUSES = ['Regular', 'Irregular', 'Graduate'];
 const MAX_FAILED_ATTEMPTS = 5;      // wrong passwords before temporary lock
 const LOCK_MINUTES        = 5;
 const ADMIN_IDLE_SECONDS  = 900;    // admin session considered abandoned after 15 min
+const ONLINE_MINUTES      = 5;      // a user counts as "online" if active in the last 5 minutes
 
 // ---------- Error logging ----------
 function log_error(string $message): void
@@ -84,10 +85,12 @@ function require_login(string $loginPath = 'index.php'): void
             flash('error', 'Your admin session ended because the account was used somewhere else.');
             redirect($loginPath);
         }
-        $stmt = $conn->prepare('UPDATE users SET last_activity = NOW() WHERE id = ?');
-        $stmt->bind_param('i', $_SESSION['user_id']);
-        $stmt->execute();
     }
+
+    // Record activity for EVERY logged-in user (used by the "Online Now" counter)
+    $stmt = $conn->prepare('UPDATE users SET last_activity = NOW() WHERE id = ?');
+    $stmt->bind_param('i', $_SESSION['user_id']);
+    $stmt->execute();
 }
 
 // For files inside /actions (paths go one level up)
@@ -112,6 +115,21 @@ function current_user(): array
         $user = $stmt->get_result()->fetch_assoc() ?: [];
     }
     return $user;
+}
+
+// Users who are logged in AND active within the last ONLINE_MINUTES minutes
+function online_users(): array
+{
+    global $conn;
+    $mins = ONLINE_MINUTES;
+    $stmt = $conn->prepare(
+        'SELECT full_name, username, role FROM users
+         WHERE active_session IS NOT NULL AND last_activity >= DATE_SUB(NOW(), INTERVAL ? MINUTE)
+         ORDER BY full_name'
+    );
+    $stmt->bind_param('i', $mins);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 
 function avatar_html(array $u, string $class = 'avatar'): string

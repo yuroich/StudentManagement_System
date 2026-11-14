@@ -26,16 +26,18 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }   /* no bottom (horizontal) scrollbar */
 body { margin: 0; font-family: "Poppins", "Segoe UI", Arial, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
 :focus-visible { outline: 3px solid var(--orange-light); outline-offset: 2px; }
 ::selection { background: var(--orange); color: #fff; }
 
-/* Slim scrollbars */
+/* Slim scrollbars (neutral, no more yellow) */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: rgba(255,255,255,.05); }
-::-webkit-scrollbar-thumb { background: linear-gradient(var(--orange), var(--orange-dark)); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.22); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.38); }
+html { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.28) transparent; }
 
 /* ---------- Keyframes ---------- */
 @keyframes riseIn   { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
@@ -114,6 +116,9 @@ input::placeholder { color: #8a8a8a; }
 .auth-switch a { color: var(--orange-light); font-weight: 700; text-decoration: none; border-bottom: 1px dashed transparent; transition: border-color .2s; }
 .auth-switch a:hover { border-color: var(--orange-light); }
 .form-error { margin: 0 0 12px; padding: 9px 12px; border-radius: 8px; background: var(--danger); color: var(--danger-ink); font-size: 13px; border-left: 4px solid #d93a2b; animation: shake .45s; }
+
+/* Green success notice (e.g. "Account created. You can now log in.") */
+.form-success { margin: 0 0 12px; padding: 9px 12px; border-radius: 8px; background: var(--ok); color: var(--ok-ink); font-size: 13px; border-left: 4px solid #2e9b47; animation: riseIn .5s var(--ease) both; }
 
 /* ---------- App shell ---------- */
 .app-body {
@@ -346,7 +351,7 @@ form.inline { display: inline; }
 @keyframes flow     { to { background-position: 200% 50%; } }
 @keyframes orbFloat { from { transform: translate(-3%, 2%) scale(1); } to { transform: translate(3%, -3%) scale(1.08); } }
 
-/* 1. Living "aurora" inside the card: blue + amber blobs drift while a soft light sheen sweeps across */
+/* 1. Living "aurora" inside the card */
 .auth-card {
   background:
     linear-gradient(115deg, transparent 38%, rgba(255,255,255,.16) 50%, transparent 62%),
@@ -358,7 +363,7 @@ form.inline { display: inline; }
   animation: riseIn .8s var(--ease) both, aurora 14s ease-in-out infinite alternate;
 }
 
-/* 2. Floating colour orbs behind the card (screen-blended over the photo) */
+/* 2. Floating colour orbs behind the card */
 .auth-body::after {
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: screen;
   background:
@@ -463,3 +468,141 @@ form.inline { display: inline; }
   .form-grid .fld-3 { grid-column: span 6; }
   .toolbar .cs { flex: 1 1 140px; }
 }
+
+/* =====================================================================
+   WAVE GRADIENTS  (soft, slowly moving waves)
+   ===================================================================== */
+@keyframes waveSlide {
+  from { background-position: 0 100%, 0 100%, 0 100%; }
+  to   { background-position: -2400px 100%, 1900px 100%, -1440px 100%; }
+}
+@keyframes waveSlideTop {
+  from { background-position: 0 100%, 0 100%; }
+  to   { background-position: 1900px 100%, -1440px 100%; }
+}
+@keyframes waveStrip  { to { background-position: -90px 0; } }
+@keyframes waveMask   { to { -webkit-mask-position: 120px 0; mask-position: 120px 0; } }
+@keyframes waveFlow   { to { background-position: 300% 50%; } }
+@keyframes waveBob    { from { transform: translateY(0); } to { transform: translateY(-14px); } }
+
+/* --- Dashboard: deep-to-bright blue base + three layers of moving waves at the bottom --- */
+.app-body {
+  background: linear-gradient(180deg, #08204a 0%, #0c3270 45%, #1a55a0 100%);
+  background-attachment: fixed;
+}
+.app-body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20320'%20preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='0'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%231c5aa6'%20stop-opacity='0.75'/%3E%3Cstop%20offset='1'%20stop-color='%231c5aa6'%20stop-opacity='0.1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20fill='url%28%23g%29'%20d='M0,150%20C240,80%20480,220%20720,150%20C960,80%201200,220%201440,150%20L1440,320%20L0,320%20Z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20320'%20preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='0'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%23f2a03d'%20stop-opacity='0.26'/%3E%3Cstop%20offset='1'%20stop-color='%23f2a03d'%20stop-opacity='0.03'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20fill='url%28%23g%29'%20d='M0,190%20C240,250%20480,130%20720,190%20C960,250%201200,130%201440,190%20L1440,320%20L0,320%20Z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20320'%20preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='0'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%238fc3f7'%20stop-opacity='0.38'/%3E%3Cstop%20offset='1'%20stop-color='%238fc3f7'%20stop-opacity='0.05'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20fill='url%28%23g%29'%20d='M0,215%20C240,163%20480,267%20720,215%20C960,163%201200,267%201440,215%20L1440,320%20L0,320%20Z'/%3E%3C/svg%3E");
+  background-repeat: repeat-x, repeat-x, repeat-x;
+  background-size: 2400px 340px, 1900px 300px, 1440px 240px;
+  background-position: 0 100%, 0 100%, 0 100%;
+  animation: waveSlide 60s linear infinite;
+}
+/* --- Stat cards --- */
+.stat {
+  background:
+    radial-gradient(130% 120% at 100% 0%, rgba(143,195,247,.32), transparent 60%),
+    linear-gradient(165deg, rgba(47,127,209,.80) 0%, rgba(18,64,127,.92) 55%, rgba(10,37,80,.96) 100%);
+}
+/* --- Table header and Add button: colour flows across like a wave --- */
+.data-table th {
+  background: linear-gradient(110deg, var(--navy-deep) 0%, var(--navy-soft) 25%, var(--sky) 50%, var(--navy-soft) 75%, var(--navy-deep) 100%);
+  background-size: 300% 100%; animation: waveFlow 18s linear infinite alternate;
+}
+.btn-blue {
+  background: linear-gradient(110deg, var(--navy-soft), var(--sky), var(--navy), var(--sky), var(--navy-soft));
+  background-size: 300% 100%; animation: waveFlow 9s linear infinite alternate;
+}
+.data-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(242,160,61,.22), rgba(47,127,209,.14) 55%, transparent);
+}
+
+/* --- Modals: wavy light inside the card --- */
+.modal-box {
+  background:
+    radial-gradient(90% 50% at 15% 0%, rgba(47,127,209,.45), transparent 70%),
+    radial-gradient(80% 45% at 100% 100%, rgba(242,160,61,.16), transparent 70%),
+    linear-gradient(160deg, rgba(18,64,127,.98) 0%, rgba(10,37,80,.99) 100%);
+}
+
+/* --- Login / sign-up: waves rise from the bottom over the photo --- */
+.auth-body::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20320'%20preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='0'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%231c5aa6'%20stop-opacity='0.75'/%3E%3Cstop%20offset='1'%20stop-color='%231c5aa6'%20stop-opacity='0.1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20fill='url%28%23g%29'%20d='M0,150%20C240,80%20480,220%20720,150%20C960,80%201200,220%201440,150%20L1440,320%20L0,320%20Z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20320'%20preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='0'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%23f2a03d'%20stop-opacity='0.26'/%3E%3Cstop%20offset='1'%20stop-color='%23f2a03d'%20stop-opacity='0.03'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20fill='url%28%23g%29'%20d='M0,190%20C240,250%20480,130%20720,190%20C960,250%201200,130%201440,190%20L1440,320%20L0,320%20Z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20320'%20preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='0'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%238fc3f7'%20stop-opacity='0.38'/%3E%3Cstop%20offset='1'%20stop-color='%238fc3f7'%20stop-opacity='0.05'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20fill='url%28%23g%29'%20d='M0,215%20C240,163%20480,267%20720,215%20C960,163%201200,267%201440,215%20L1440,320%20L0,320%20Z'/%3E%3C/svg%3E");
+  background-repeat: repeat-x, repeat-x, repeat-x;
+  background-size: 2400px 340px, 1900px 300px, 1440px 240px;
+  background-position: 0 100%, 0 100%, 0 100%;
+  animation: waveSlide 50s linear infinite;
+}
+.auth-card {
+  background:
+    linear-gradient(115deg, transparent 38%, rgba(255,255,255,.14) 50%, transparent 62%),
+    radial-gradient(120% 60% at 0% 0%, rgba(47,127,209,.55), transparent 65%),
+    radial-gradient(100% 60% at 100% 100%, rgba(242,160,61,.26), transparent 65%),
+    radial-gradient(90% 50% at 30% 100%, rgba(143,195,247,.20), transparent 65%),
+    linear-gradient(160deg, rgba(10,37,80,.82), rgba(10,37,80,.62));
+  background-size: 250% 100%, 170% 170%, 170% 170%, 170% 170%, 100% 100%;
+}
+
+/* =====================================================================
+   SCENERY: header line, stat cards, sunny sky with flying birds
+   ===================================================================== */
+@keyframes lineGlide { from { left: -22%; } to { left: 100%; } }
+@keyframes birdFly {
+  from { background-position: 0 40px,    0 110px,   0 10px,    0 0, 0 0; }
+  to   { background-position: 1400px 40px, 2200px 110px, 3600px 10px, 0 0, 0 0; }
+}
+
+/* --- Header: a thin glowing line with a light that glides along it --- */
+.topbar { border-bottom: 0; border-image: none; }
+.topbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(143,195,247,.75) 22%, var(--orange) 50%, rgba(143,195,247,.75) 78%, transparent);
+  box-shadow: 0 0 14px rgba(242,160,61,.35);
+}
+.topbar::before {
+  content: ""; position: absolute; bottom: 0; left: -22%; width: 22%; height: 2px; pointer-events: none; z-index: 1;
+  background: linear-gradient(90deg, transparent, #fff, transparent); filter: blur(.6px);
+  animation: lineGlide 7s ease-in-out infinite;
+}
+
+/* --- Stat cards: clean glowing top edge (no waves) --- */
+.stat { background:
+    radial-gradient(130% 120% at 100% 0%, rgba(143,195,247,.30), transparent 60%),
+    linear-gradient(165deg, rgba(47,127,209,.80) 0%, rgba(18,64,127,.92) 55%, rgba(10,37,80,.96) 100%); }
+.stat::before { left: 12%; right: 12%; top: 0; height: 3px; border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg, transparent, var(--orange), var(--orange-light), var(--orange), transparent);
+  box-shadow: 0 0 16px rgba(242,160,61,.55); }
+
+/* --- Sky: light blue glow, a soft sun, and three flocks of black birds (far, middle, near) --- */
+.app-body::after {
+  content: ""; position: fixed; left: 0; right: 0; top: 0; height: 62vh; pointer-events: none; z-index: 0;
+  transform: none; opacity: 1;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='1400'%20height='300'%20viewBox='0%200%201400%20300'%3E%3Cg%20transform='translate%28120,60%29%20scale%280.6%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.3s'%20begin='-0.1s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%28190,85%29%20scale%280.55%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.2s'%20begin='-0.5s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%28260,58%29%20scale%280.6%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.4s'%20begin='-0.9s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%28640,150%29%20scale%280.6%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.3s'%20begin='-0.3s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%28700,170%29%20scale%280.55%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.2s'%20begin='-0.7s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281010,90%29%20scale%280.6%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.4s'%20begin='-0.2s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281080,115%29%20scale%280.55%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.3s'%20begin='-0.8s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281250,210%29%20scale%280.6%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.2s'%20begin='-0.4s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='2200'%20height='300'%20viewBox='0%200%202200%20300'%3E%3Cg%20transform='translate%28300,90%29%20scale%281%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.0s'%20begin='-0.2s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%28370,120%29%20scale%280.9%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.1s'%20begin='-0.6s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%28440,84%29%20scale%280.95%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.0s'%20begin='-0.1s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281180,170%29%20scale%281%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.1s'%20begin='-0.5s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281260,200%29%20scale%280.9%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.0s'%20begin='-0.9s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281850,70%29%20scale%281%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='1.2s'%20begin='-0.3s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='3600'%20height='300'%20viewBox='0%200%203600%20300'%3E%3Cg%20transform='translate%28900,110%29%20scale%281.7%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='0.9s'%20begin='-0.4s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%281000,150%29%20scale%281.5%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='0.95s'%20begin='-0.8s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3Cg%20transform='translate%282650,60%29%20scale%281.8%29'%3E%3Cpath%20d='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20fill='none'%20stroke='%2304060c'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Canimate%20attributeName='d'%20dur='0.9s'%20begin='-0.2s'%20repeatCount='indefinite'%20values='M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6;M-14,4%20Q-6,0%200,0%20Q6,0%2014,4;M-14,-6%20Q-6,-11%200,0%20Q6,-11%2014,-6'%20keyTimes='0;.5;1'%20calcMode='spline'%20keySplines='.4%200%20.6%201;.4%200%20.6%201'/%3E%3C/path%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle at 84% 24%, rgba(255,214,140,.75) 0, rgba(242,160,61,.30) 70px, rgba(242,160,61,.10) 190px, transparent 320px),
+    linear-gradient(180deg, rgba(143,195,247,.55) 0%, rgba(47,127,209,.22) 48%, transparent 100%);
+  background-repeat: repeat-x, repeat-x, repeat-x, no-repeat, no-repeat;
+  background-size: 1400px 300px, 2200px 300px, 3600px 300px, 100% 100%, 100% 100%;
+  background-position: 0 40px, 0 110px, 0 10px, 0 0, 0 0;
+  animation: birdFly 80s linear infinite;
+}
+
+/* =====================================================================
+   ONLINE USERS: clickable stat card + popup list
+   ===================================================================== */
+button.stat-click { font: inherit; color: inherit; cursor: pointer; }
+.stat-click::after { content: "View list"; display: block; margin-top: 2px; font-size: 10.5px; letter-spacing: .5px; color: #9cc8f5; opacity: .8; }
+
+.online-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 50vh; overflow-y: auto; }
+.online-list li {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); font-size: 13.5px;
+}
+.online-list .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #3ddc6b; box-shadow: 0 0 0 4px rgba(61,220,107,.2); }
+.online-list .who { flex: 1; font-weight: 600; }
+.online-list small { color: #a9c6f5; font-weight: 400; margin-left: 4px; }
+.online-list .role { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(242,160,61,.18); color: var(--orange-light); }
+.online-empty { margin: 0; text-align: center; color: #cfe0ff; font-style: italic; }
