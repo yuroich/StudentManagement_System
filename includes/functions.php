@@ -83,7 +83,7 @@ function require_login(string $loginPath = 'index.php'): void
             session_destroy();
             session_start();
             flash('error', 'Your admin session ended because the account was used somewhere else.');
-            redirect($loginPath);
+            redirect(str_replace('index.php', 'admin_login.php', $loginPath));   // admins sign in on their own page
         }
     }
 
@@ -91,6 +91,92 @@ function require_login(string $loginPath = 'index.php'): void
     $stmt = $conn->prepare('UPDATE users SET last_activity = NOW() WHERE id = ?');
     $stmt->bind_param('i', $_SESSION['user_id']);
     $stmt->execute();
+}
+
+// ---------- Login (shared by index.php and admin_login.php) ----------
+// $portal = 'user'  -> regular Sign In page (admin accounts are refused there)
+// $portal = 'admin' -> separate Admin Login page (only the admin account is accepted)
+// Returns an error message when the login fails; on success it redirects to the dashboard.
+function attempt_login(string $portal): string
+{
+    global $conn;
+    csrf_check();
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $ip       = $_SERVER['REMOTE_ADDR'] ?? '?';
+
+    if ($username === '' || $password === '') {
+        return 'Please enter your username and password.';
+    }
+
+    // Prepared statement => no SQL injection
+    $stmt = $conn->prepare(
+        'SELECT id, full_name, password, role, active_session, failed_attempts,
+                TIMESTAMPDIFF(SECOND, NOW(), locked_until)  AS lock_left,
+                TIMESTAMPDIFF(SECOND, last_activity, NOW()) AS idle_seconds
+         FROM users WHERE username = ?'
+    );
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
+
+    if (!$user) {
+        log_error("Failed login: unknown username '$username' from $ip");
+        return 'Invalid username or password.';
+    }
+
+    if ($user['lock_left'] !== null && (int)$user['lock_left'] > 0) {
+        $mins = (int)ceil($user['lock_left'] / 60);
+        return "Too many failed attempts. Try again in $mins minute(s).";
+    }
+
+    if (!password_verify($password, $user['password'])) {
+        $attempts = (int)$user['failed_attempts'] + 1;
+        log_error("Failed login for '$username' (attempt $attempts)");
+        if ($attempts >= MAX_FAILED_ATTEMPTS) {
+            $stmt = $conn->prepare('UPDATE users SET failed_attempts = 0, locked_until = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ?');
+            $mins = LOCK_MINUTES;
+            $stmt->bind_param('ii', $mins, $user['id']);
+            $stmt->execute();
+            return 'Too many failed attempts. This account is locked for ' . LOCK_MINUTES . ' minutes.';
+        }
+        $stmt = $conn->prepare('UPDATE users SET failed_attempts = ? WHERE id = ?');
+        $stmt->bind_param('ii', $attempts, $user['id']);
+        $stmt->execute();
+        $left = MAX_FAILED_ATTEMPTS - $attempts;
+        return "Invalid username or password. $left attempt(s) left.";
+    }
+
+    // Correct password, but is it the right login page for this account?
+    $isAdminAccount = ($user['role'] === 'admin');
+    if ($portal === 'admin' && !$isAdminAccount) {
+        log_error("Non-admin '$username' tried the Admin Login page from $ip");
+        return 'This page is for the administrator only. Please use the regular Sign In page.';
+    }
+    if ($portal === 'user' && $isAdminAccount) {
+        log_error("Admin account tried the regular Sign In page from $ip");
+        return 'Administrators must sign in on the Admin Login page.';
+    }
+
+    // Only ONE admin may be logged in at a time
+    if ($isAdminAccount
+        && !empty($user['active_session'])
+        && $user['active_session'] !== session_id()
+        && $user['idle_seconds'] !== null
+        && (int)$user['idle_seconds'] < ADMIN_IDLE_SECONDS) {
+        log_error("Blocked second admin login attempt from $ip");
+        return 'The admin account is already logged in on another device. Only one admin session is allowed.';
+    }
+
+    session_regenerate_id(true);              // prevent session fixation
+    $_SESSION['user_id'] = (int)$user['id'];
+    $_SESSION['role']    = $user['role'];
+
+    $sid = session_id();
+    $stmt = $conn->prepare('UPDATE users SET failed_attempts = 0, locked_until = NULL, active_session = ?, last_activity = NOW() WHERE id = ?');
+    $stmt->bind_param('si', $sid, $user['id']);
+    $stmt->execute();
+    redirect('dashboard.php');
 }
 
 // For files inside /actions (paths go one level up)

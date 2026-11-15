@@ -606,3 +606,45 @@ button.stat-click { font: inherit; color: inherit; cursor: pointer; }
 .online-list small { color: #a9c6f5; font-weight: 400; margin-left: 4px; }
 .online-list .role { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(242,160,61,.18); color: var(--orange-light); }
 .online-empty { margin: 0; text-align: center; color: #cfe0ff; font-style: italic; }
+/* =====================================================================
+   ADMIN LOGIN NOTE, "VIEW" LINK AND STUDENT DETAILS PAGE
+   ===================================================================== */
+.auth-note { margin: -10px 0 16px; text-align: center; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #cfe0ff; }
+.auth-switch-sub { margin-top: 8px; font-size: 12px; opacity: .9; }
+a.link-btn { display: inline-block; text-decoration: none; }
+
+.back-link { display: inline-block; margin: 0 0 16px calc((100% - min(720px, 100%)) / 2); padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none; color: var(--navy-deep);
+  background: linear-gradient(120deg, #f7f1e5, #e3ecf8); box-shadow: 0 6px 18px rgba(5,20,50,.25); transition: transform .25s var(--ease), box-shadow .25s; animation: riseIn .6s var(--ease) both; }
+.back-link:hover { transform: translateX(-3px); box-shadow: 0 8px 22px rgba(242,160,61,.35); }
+
+.detail-card {
+  position: relative; max-width: 720px; margin: 0 auto; padding: 28px 32px 30px; border-radius: 18px; color: #fff;
+  background:
+    radial-gradient(90% 50% at 15% 0%, rgba(47,127,209,.45), transparent 70%),
+    radial-gradient(80% 45% at 100% 100%, rgba(242,160,61,.16), transparent 70%),
+    linear-gradient(160deg, rgba(18,64,127,.98) 0%, rgba(10,37,80,.99) 100%);
+  border: 1px solid var(--glass-border); box-shadow: var(--shadow); animation: popIn .5s var(--ease) both;
+}
+.detail-card::before { content: ""; position: absolute; left: 14%; right: 14%; top: -1px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--orange), var(--sky), var(--orange), transparent); }
+.detail-head { display: flex; align-items: center; gap: 16px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+.detail-avatar { flex: none; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; font-weight: 700; color: var(--orange-light);
+  background: linear-gradient(135deg, var(--navy-soft), var(--navy-deep)); border: 2px solid var(--orange); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.detail-title { flex: 1; min-width: 0; }
+.detail-title h1 { margin: 0; font-size: 21px; font-weight: 700; color: var(--orange-light); word-break: break-word; }
+.detail-title p { margin: 4px 0 0; font-size: 13px; color: #cfe0ff; }
+.pill { flex: none; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .5px; }
+.pill-regular   { background: #dcf5e1; color: #1b5e2b; }
+.pill-irregular { background: #ffe9c7; color: #8a5200; }
+.pill-graduate  { background: #dbe9ff; color: #12407f; }
+.detail-grid { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.detail-item { padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.detail-item dt { margin: 0 0 3px; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #a9c6f5; }
+.detail-item dd { margin: 0; font-size: 14.5px; font-weight: 600; color: #ffd9a6; word-break: break-word; }
+.detail-wide { grid-column: 1 / -1; }
+.detail-actions { margin-top: 22px; text-align: center; }
+.detail-actions .btn { display: inline-block; padding: 11px 34px; border-radius: 24px; text-decoration: none; }
+@media (max-width: 560px) {
+  .detail-card { padding: 22px 18px 24px; }
+  .detail-head { flex-wrap: wrap; }
+  .detail-grid { grid-template-columns: 1fr; }
+}

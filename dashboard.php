@@ -1,5 +1,5 @@
 <?php
-// DASHBOARD - admin sees Update/Delete; normal users can only view, search and add.
+// DASHBOARD - admin sees Update/Delete; normal users can only view (details page), search and add.
 require_once __DIR__ . '/includes/init.php';
 require_login();
 
@@ -92,21 +92,16 @@ require __DIR__ . '/includes/header.php';
         <?php else: ?>
           <td><?= e($s['status']) ?></td>
         <?php endif; ?>
-        <td><button type="button" class="link-btn" data-view="<?= (int)$s['id'] ?>">View</button></td>
+        <?php
+          // Link to the details page; keep the current search/filter so "Back" returns to the same results
+          $viewQuery = http_build_query(array_filter(['id' => $s['id'], 'q' => $q, 'course' => $course], fn($v) => $v !== ''));
+        ?>
+        <td><a class="link-btn" href="view.php?<?= e($viewQuery) ?>">View</a></td>
       </tr>
     <?php endforeach; ?>
     </tbody>
   </table>
 </main>
-
-<!-- VIEW modal -->
-<div class="modal" id="viewModal" hidden>
-  <div class="modal-box">
-    <button type="button" class="modal-close" data-close aria-label="Close">&times;</button>
-    <h2>Student Profile</h2>
-    <dl class="profile" id="profileList"></dl>
-  </div>
-</div>
 
 <!-- ADD / UPDATE modal (one form, reused) -->
 <div class="modal" id="formModal" hidden>

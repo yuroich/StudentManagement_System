@@ -2,6 +2,8 @@
 // LOGOUT - ends the session and frees the single admin slot.
 require_once __DIR__ . '/includes/init.php';
 
+$wasAdmin = is_admin();      // remember, so admins land back on their own login page
+
 if (is_logged_in()) {
     $stmt = $conn->prepare('UPDATE users SET active_session = NULL WHERE id = ? AND active_session = ?');
     $sid = session_id();
@@ -14,5 +16,5 @@ if (ini_get('session.use_cookies')) {
     setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
 }
 session_destroy();
-header('Location: index.php');
+header('Location: ' . ($wasAdmin ? 'admin_login.php' : 'index.php'));
 exit;

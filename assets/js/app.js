@@ -1,4 +1,4 @@
-// Dashboard behaviour: modals, view/update loading, live search, delete confirm, menu.
+// Dashboard behaviour: add/update pop-up, live search, delete confirm, animated dropdowns, menu.
 (function () {
   'use strict';
   const $ = (sel) => document.querySelector(sel);
@@ -14,7 +14,6 @@
   if (toast) { setTimeout(() => toast.classList.add('hide'), 4000); }
 
   // ----- Modal helpers -----
-  const viewModal = $('#viewModal');
   const formModal = $('#formModal');
   const open = (m) => { closeAllSelects(); m.hidden = false; };
   const close = (m) => { m.hidden = true; };
@@ -22,7 +21,7 @@
     m.addEventListener('click', (e) => { if (e.target === m || e.target.hasAttribute('data-close')) close(m); });
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { close(viewModal); close(formModal); }
+    if (e.key === 'Escape') { close(formModal); }
   });
 
   // ----- Animated dropdowns -----
@@ -135,27 +134,6 @@
     if (!res.ok) { alert('Could not load that student.'); return null; }
     return res.json();
   }
-
-  // ----- View student -----
-  document.querySelectorAll('[data-view]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const s = await fetchStudent(btn.dataset.view);
-      if (!s) return;
-      const rows = [
-        ['Name', s.full_name], ['Course', s.course], ['Year & Block', s.year_level + s.block],
-        ['Contact', s.contact], ['Gender', s.gender], ['Address', s.address],
-        ['Birth Date', s.birth_date], ['Status', s.status],
-      ];
-      const list = $('#profileList');
-      list.innerHTML = '';
-      rows.forEach(([label, value]) => {          // textContent => safe against XSS
-        const dt = document.createElement('dt'); dt.textContent = label + ':';
-        const dd = document.createElement('dd'); dd.textContent = value;
-        list.append(dt, dd);
-      });
-      open(viewModal);
-    });
-  });
 
   // ----- Add student -----
   const form = $('#studentForm');

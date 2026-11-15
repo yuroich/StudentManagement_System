@@ -17,11 +17,12 @@ Authorized users log in to add student records, search for students by name, and
 ## Features
 
 - Secure login and logout (hashed passwords, sessions, lockout after repeated failed attempts)
+- Separate **Admin Login** page for the administrator (`admin_login.php`); regular users sign in on the normal Sign In page
 - Sign-up for regular user accounts (admin accounts cannot be created from the app)
 - Add new student records (admin and regular users)
 - Edit and delete student records (admin only, enforced on the server)
 - Search students by name, with live suggestions, and filter by course
-- View a student's full details
+- View a student's full details on their own page (`view.php`), linked from the list, with a Back link
 - Only one admin account, with a message when a second admin login is attempted
 - Errors are logged to `sms/logs/error.log`
 
@@ -29,8 +30,8 @@ Authorized users log in to add student records, search for students by name, and
 
 | Role | Can do |
 |------|--------|
-| Admin | Log in, add, edit, delete, search, view |
-| User | Sign up, log in, add, search, view |
+| Admin | Log in on the Admin Login page, add, edit, delete, search, view |
+| User | Sign up, log in on the Sign In page, add, search, view |
 
 ## Tech Stack
 
@@ -44,9 +45,11 @@ Authorized users log in to add student records, search for students by name, and
 ```
 README.md
 .gitignore
-index.php            Login page
+index.php            User sign-in page
+admin_login.php      Separate admin login page
 register.php         Sign-up page
-dashboard.php        Student list, search, add, view, update, delete
+dashboard.php        Student list, search, add, update, delete
+view.php             Student details page
 manage_account.php   Edit your own account
 logout.php
 database.sql         Creates the database, tables and the admin account
@@ -64,7 +67,8 @@ docs/                Planning notes, checklist and user guide
 2. Copy this whole project folder into `C:\xampp\htdocs\`.
 3. Open `http://localhost/phpmyadmin`, choose **Import**, select `database.sql`, and click **Go**.
 4. Open `http://localhost/<folder-name>/` in your browser, using the name of the folder you copied.
-5. Log in with the admin account created by `database.sql`, then change its password from **Manage Account**.
+5. Optional: import `docs/sample_data.sql` the same way to fill the list with 24 made-up students.
+6. Open `http://localhost/<folder-name>/admin_login.php` and log in with the admin account created by `database.sql`, then change its password from **Manage Account**. Regular users sign in at the normal page.
 
 If your MySQL has a root password, edit `config/db.php`.
 
